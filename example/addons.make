@@ -1,1 +1,6 @@
-ofxTSNE
+ofxDatGui
+ofxHighDim
+ofxInfiniteCanvas
+ofxModal
+ofxParagraph
+ofxSpatialHash

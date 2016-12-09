@@ -1,0 +1,58 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "E0DC71BFE67F75D80C24B658C9671C34FDB45F42",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "92CBB09FB1FEF12B475B64CE56E8995C1DE44643" : 9223372036854775807,
+    "9233F0F4A2BE011BD468E5177A5AD6623263B23D" : 9223372036854775807,
+    "2541E93095FA21F9BE201FC6B163A35AE7DF6104" : 9223372036854775807,
+    "E640290FCA0BCDD9BB8025CA73A74DB3CD8AB4AE" : 9223372036854775807,
+    "E0DC71BFE67F75D80C24B658C9671C34FDB45F42" : 9223372036854775807,
+    "DAFB6CE067F50E3E7780A90F55796AE85A57057A" : 9223372036854775807
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "B0028345-6C56-4584-A90E-0CA6615AD91E",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "92CBB09FB1FEF12B475B64CE56E8995C1DE44643" : "ofxSpatialHash\/",
+    "9233F0F4A2BE011BD468E5177A5AD6623263B23D" : "ofxDatGui\/",
+    "2541E93095FA21F9BE201FC6B163A35AE7DF6104" : "ofxModal\/",
+    "E640290FCA0BCDD9BB8025CA73A74DB3CD8AB4AE" : "ofxParagraph\/",
+    "E0DC71BFE67F75D80C24B658C9671C34FDB45F42" : "ofxHighDim\/",
+    "DAFB6CE067F50E3E7780A90F55796AE85A57057A" : "ofxInfiniteCanvas\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "example",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "example\/example.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/braitsch\/ofxModal.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "2541E93095FA21F9BE201FC6B163A35AE7DF6104"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/thomwolf\/ofxDatGui.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "9233F0F4A2BE011BD468E5177A5AD6623263B23D"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/bakercp\/ofxSpatialHash.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "92CBB09FB1FEF12B475B64CE56E8995C1DE44643"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/roymacdonald\/ofxInfiniteCanvas.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "DAFB6CE067F50E3E7780A90F55796AE85A57057A"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/thomwolf\/ofxTSNE.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "E0DC71BFE67F75D80C24B658C9671C34FDB45F42"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/braitsch\/ofxParagraph.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "E640290FCA0BCDD9BB8025CA73A74DB3CD8AB4AE"
+    }
+  ]
+}

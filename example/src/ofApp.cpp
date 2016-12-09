@@ -1,5 +1,10 @@
 #include "ofApp.h"
 
+ofApp::ofApp():
+hash(tsnePoints)
+{
+}
+
 //--------------------------------------------------------------
 void ofApp::setup(){
     
@@ -7,7 +12,7 @@ void ofApp::setup(){
     // letting us watch the process take place. If set to false, the whole
     // process will take place internally when you run ofxTSNE::run
 
-    runManually = true;
+    runManually = false;//true; //
     
     // first let's construct our toy dataset.
     // we will create N samples of dimension D, which will be distributed
@@ -54,6 +59,11 @@ void ofApp::setup(){
     
     testPoints.clear();
     
+    tsne_fixed_points.clear();
+    ofEnableAlphaBlending();
+    highDim.mesh.setMode(OF_PRIMITIVE_POINTS);
+    glPointSize(4);
+    
     for (int i = 0; i < N; i++) {
         // choose a random class
         int class_ = ofRandom(numClasses);
@@ -81,8 +91,10 @@ void ofApp::setup(){
     // to a single data point. So let's unpack our testPoints into this.
     
     vector<vector<float> > data;
+    vector<int> classes;
     for (int i = 0; i < N; i++) {
         data.push_back(testPoints[i].point);
+        classes.push_back(testPoints[i].class_);
     }
     
     // ofxTSNE takes four parameters:
@@ -111,44 +123,87 @@ void ofApp::setup(){
     int dims = 2;
     float perplexity = 40;
     float theta = 0.2;
-    bool normalize = true;
+    bool normalize = false;//true;
     
     // finally let's run ofxTSNE! this may take a while depending on your
     // data, and it will return a set of embedded points, structured as
     // a vector<vector<float> > where the inner vector contains (dims) elements.
     // We will unpack these points and assign them back to our testPoints dataset.
 
-    tsnePoints = tsne.run(data, dims, perplexity, theta, normalize, runManually);
+    tsnePoints = highDim.run(data, classes, dims, perplexity, theta, normalize, runManually);
+    
+    // Hash to quickly find closest point
+    hash.buildIndex();
     
     // if we didn't run manually, we can collect the points immediately
-    if (!runManually) {
-        for (int i=0; i<testPoints.size(); i++) {
-            testPoints[i].tsnePoint = ofPoint(tsnePoints[i][0], tsnePoints[i][1]);
-        }
-    }
+//    if (!runManually) {
+//        for (int i=0; i<testPoints.size(); i++) {
+//            testPoints[i].tsnePoint = ofPoint(tsnePoints[i][0], tsnePoints[i][1]);
+//        }
+//    }
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    // if we are running our t-SNE manually, we need to run tsne.iterate() to
+    // if we are running our t-SNE manually, we need to run highDim.iterate() to
     // go through each iteration and collect the points where they currently are
     if (runManually) {
-        tsnePoints = tsne.iterate();
-        for (int i=0; i<testPoints.size(); i++) {
-            testPoints[i].tsnePoint = ofPoint(tsnePoints[i][0], tsnePoints[i][1]);
-        }
+        tsnePoints = highDim.iterate(tsne_fixed_points);
+        // Hash to quickly find closest point
+        hash.buildIndex();
+        float xn = (float) ofGetMouseX() / (float) ofGetWidth();
+        float yn = (float) ofGetMouseY()  / (float) ofGetHeight();
+        ofVec2f mouse = ofVec2f(xn, yn);
+        searchResults.clear();
+        searchResults.resize(1);
+        hash.findNClosestPoints(mouse, 1, searchResults);
+        
+//        for (int i=0; i<testPoints.size(); i++) {
+//            testPoints[i].tsnePoint = ofPoint(tsnePoints[i][0], tsnePoints[i][1]);
+//        }
     }
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    ofBackground(255);
-    for (int i=0; i<testPoints.size(); i++) {
-        float x = ofGetWidth() * testPoints[i].tsnePoint.x;
-        float y = ofGetHeight() * testPoints[i].tsnePoint.y;
-        ofSetColor(testPoints[i].color, 100);
-        ofDrawEllipse(x, y, 8, 8);
+    cam.begin();
+    ofBackground(5);
+//    ofBackgroundGradient(ofColor(100), ofColor(20));
+    ofSetColor(255);
+    // Draw all of the points.
+    highDim.mesh.draw();
+//    for (int i=0; i<testPoints.size(); i++) {
+//        float x = ofGetWidth() * tsnePoints[i].x; //testPoints[i].tsnePoint.x;
+//        float y = ofGetHeight() * tsnePoints[i].y; //testPoints[i].tsnePoint.y;
+//        ofSetColor(testPoints[i].color, 100);
+//        ofDrawEllipse(x, y, 8, 8);
+//    }
+    if (searchResults.size() > 0) {
+        ofFill();
+        ofSetColor(255, 0, 0, 255);
+        ofVec2f point = tsnePoints[searchResults[0].first];
+        float x = ofGetWidth() * point.x; //testPoints[i].tsnePoint.x;
+        float y = ofGetHeight() * point.y; //testPoints[i].tsnePoint.y;
+        ofDrawEllipse(x, y, 10, 10);
     }
+    if (tsne_fixed_points.size()>0){
+        for(std::map<int,ofVec2f>::iterator ii=tsne_fixed_points.begin(); ii!=tsne_fixed_points.end(); ++ii)
+        {
+            ofSetColor(0, 255, 0, 255);
+            ofVec2f point = (*ii).second;
+            float x = ofGetWidth() * point.x; //testPoints[i].tsnePoint.x;
+            float y = ofGetHeight() * point.y; //testPoints[i].tsnePoint.y;
+            ofDrawEllipse(x, y, 10, 10);
+        }
+    }
+    if (pointTracked){
+        ofSetColor(0, 0, 255, 255);
+        ofVec2f point = tsne_fixed_points[draggedPoint.index];
+        float x = ofGetWidth() * point.x; //testPoints[i].tsnePoint.x;
+        float y = ofGetHeight() * point.y; //testPoints[i].tsnePoint.y;
+        ofDrawEllipse(x, y, 10, 10);
+    }
+    cam.end();
 }
 
 //--------------------------------------------------------------
@@ -168,17 +223,33 @@ void ofApp::mouseMoved(int x, int y ){
 
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
-
+    if (pointTracked){
+        ofVec2f pointPos = cam.screenToWorld(ofVec3f(x, y));
+        tsne_fixed_points[draggedPoint.index] = pointPos;
+    }
 }
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
-
+    if (searchResults.size() > 0) {
+        ofVec2f point = tsnePoints[searchResults[0].first];
+        ofVec2f pointPos = cam.screenToWorld(ofVec3f(x, y));
+        if (pointPos.distance(point) < 100) {
+            addTrackedPoint(searchResults[0].first, point);
+        }
+    }
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
-
+    if (pointTracked){
+        if (tsne_fixed_points[draggedPoint.index] == draggedPoint.position){
+            // We have not moved the point but only clicked on it, unfix the point
+            pointTracked = false;
+            tsne_fixed_points.erase(draggedPoint.index);
+            std::cout << "Removed: Fixed points: " << tsne_fixed_points.size() << '\n';
+        }
+    }
 }
 
 //--------------------------------------------------------------
@@ -204,4 +275,23 @@ void ofApp::gotMessage(ofMessage msg){
 //--------------------------------------------------------------
 void ofApp::dragEvent(ofDragInfo dragInfo){ 
 
+}
+
+//--------------------------------------------------------------
+void ofApp::addTrackedPoint(int index, ofVec2f point){
+    std::map<int, ofVec2f>::iterator it = tsne_fixed_points.find(index);
+    //it = find (tsne_fixed_points_index.begin(), tsne_fixed_points_index.end(), 30);
+    //it = find_if(tsne_fixed_points.begin(), tsne_fixed_points.end(), [&index](const FixedPoint &point) {return point.index == index; });
+    pointTracked = true;
+    draggedPoint.index = index;
+    draggedPoint.position = point;
+    if (it != tsne_fixed_points.end()) {
+        std::cout << "Element found in myvector \n";
+//        draggedPoint.position = ofVec2f(x, y); // Only update clicked position
+    } else {
+        std::cout << "Element not found in tsne_fixed_points_index\n";
+        tsne_fixed_points[index] = draggedPoint.position;
+//        ofLog(OF_LOG_VERBOSE, tsne_fixed_points);
+    }
+    std::cout << "Fixed points: " << tsne_fixed_points.size() << '\n';
 }
